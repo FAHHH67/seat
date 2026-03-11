@@ -9,31 +9,38 @@
 
 body{
 margin:0;
-background:white;
 font-family:sans-serif;
+display:flex;
+height:100vh;
 }
 
+/* 자리 찍는 영역 */
+#canvas{
+flex:1;
+background:white;
+position:relative;
+border-right:2px solid black;
+}
+
+/* 오른쪽 UI 패널 */
 #panel{
-position:fixed;
-top:20px;
-right:20px;
-width:140px;
-background:#f7f7f7;
-border:2px solid black;
-padding:10px;
-box-shadow:2px 2px 6px rgba(0,0,0,0.2);
+width:180px;
+background:#f5f5f5;
+padding:15px;
+box-sizing:border-box;
 }
 
 #panel button{
 display:block;
-margin-top:6px;
 width:100%;
+margin-top:8px;
 }
 
 #panel input{
 width:100%;
 }
 
+/* 동그라미 */
 .circle{
 position:absolute;
 width:70px;
@@ -55,6 +62,8 @@ background:white;
 
 <body>
 
+<div id="canvas"></div>
+
 <div id="panel">
 
 <div>제외 번호</div>
@@ -68,23 +77,27 @@ background:white;
 
 <script>
 
+let canvas=document.getElementById("canvas")
+
 let circles=[]
 let createNumber=1
 
-document.addEventListener("click",function(e){
+canvas.addEventListener("click",function(e){
 
-// 패널 안 클릭하면 자리 생성 안됨
-if(e.target.closest("#panel")) return
+let rect=canvas.getBoundingClientRect()
+
+let x=e.clientX-rect.left
+let y=e.clientY-rect.top
 
 let circle=document.createElement("div")
 
 circle.className="circle"
 circle.innerText=createNumber
 
-circle.style.left=e.pageX+"px"
-circle.style.top=e.pageY+"px"
+circle.style.left=x+"px"
+circle.style.top=y+"px"
 
-document.body.appendChild(circle)
+canvas.appendChild(circle)
 
 circles.push(circle)
 
