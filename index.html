@@ -6,25 +6,32 @@
 <title>Seat Picker</title>
 
 <style>
+
 body{
 margin:0;
 background:white;
 font-family:sans-serif;
 }
 
-#controls{
+#panel{
 position:fixed;
 top:20px;
 right:20px;
-background:white;
-padding:12px;
-border:1px solid #ccc;
+width:140px;
+background:#f7f7f7;
+border:2px solid black;
+padding:10px;
+box-shadow:2px 2px 6px rgba(0,0,0,0.2);
 }
 
-button{
+#panel button{
 display:block;
 margin-top:6px;
-width:110px;
+width:100%;
+}
+
+#panel input{
+width:100%;
 }
 
 .circle{
@@ -39,19 +46,24 @@ justify-content:center;
 font-size:22px;
 font-weight:bold;
 transform:translate(-50%,-50%);
+background:white;
 }
+
 </style>
 
 </head>
 
 <body>
 
-<div id="controls">
+<div id="panel">
+
 <div>제외 번호</div>
-<input id="exclude" placeholder="예: 2,5,7">
+<input id="exclude" placeholder="2,5,7">
+
 <button onclick="undo()">Undo</button>
 <button onclick="shuffleNumbers()">Random</button>
 <button onclick="resetAll()">Reset</button>
+
 </div>
 
 <script>
@@ -59,12 +71,13 @@ transform:translate(-50%,-50%);
 let circles=[]
 let createNumber=1
 
-// 클릭하면 동그라미 생성
 document.addEventListener("click",function(e){
 
-if(e.target.tagName==="INPUT" || e.target.tagName==="BUTTON") return
+// 패널 안 클릭하면 자리 생성 안됨
+if(e.target.closest("#panel")) return
 
 let circle=document.createElement("div")
+
 circle.className="circle"
 circle.innerText=createNumber
 
@@ -74,11 +87,11 @@ circle.style.top=e.pageY+"px"
 document.body.appendChild(circle)
 
 circles.push(circle)
+
 createNumber++
 
 })
 
-// 마지막 삭제
 function undo(){
 
 let last=circles.pop()
@@ -90,7 +103,6 @@ createNumber--
 
 }
 
-// 제외번호 가져오기
 function getExclude(){
 
 let text=document.getElementById("exclude").value
@@ -101,7 +113,6 @@ return text.split(",").map(n=>parseInt(n.trim())).filter(n=>!isNaN(n))
 
 }
 
-// 번호 랜덤 섞기
 function shuffleNumbers(){
 
 let exclude=getExclude()
@@ -110,7 +121,7 @@ let need=circles.length
 let numbers=[]
 let n=1
 
-while(numbers.length<need){
+while(numbers.length < need){
 
 if(!exclude.includes(n)){
 numbers.push(n)
@@ -120,7 +131,6 @@ n++
 
 }
 
-// 랜덤 섞기
 numbers.sort(()=>Math.random()-0.5)
 
 circles.forEach((c,i)=>{
@@ -129,7 +139,6 @@ c.innerText=numbers[i]
 
 }
 
-// 전체 삭제
 function resetAll(){
 
 circles.forEach(c=>c.remove())
