@@ -54,15 +54,46 @@ transform:translate(-50%,-50%);
 <input id="exclude" placeholder="예: 2,5,7">
 
 <button onclick="undo()">Undo</button>
-<button onclick="randomSeat()">Random</button>
+<button onclick="shuffle()">Random</button>
 <button onclick="resetAll()">Reset</button>
 
 </div>
 
 <script>
 
-let number=1
 let circles=[]
+let createNumber=1
+
+document.addEventListener("click",function(e){
+
+if(e.target.tagName==="INPUT" || e.target.tagName==="BUTTON") return
+
+let circle=document.createElement("div")
+
+circle.className="circle"
+circle.innerText=createNumber
+
+circle.style.left=e.pageX+"px"
+circle.style.top=e.pageY+"px"
+
+document.body.appendChild(circle)
+
+circles.push(circle)
+
+createNumber++
+
+})
+
+function undo(){
+
+let last=circles.pop()
+
+if(last){
+last.remove()
+createNumber--
+}
+
+}
 
 function getExclude(){
 
@@ -74,62 +105,30 @@ return text.split(",").map(n=>parseInt(n.trim()))
 
 }
 
-function getNextNumber(){
+function shuffle(){
 
 let exclude=getExclude()
 
-while(exclude.includes(number)){
-number++
+let needed=circles.length
+
+let numbers=[]
+let n=1
+
+while(numbers.length < needed){
+
+if(!exclude.includes(n)){
+numbers.push(n)
 }
 
-return number
-
-}
-
-function createCircle(x,y){
-
-let n=getNextNumber()
-
-let circle=document.createElement("div")
-circle.className="circle"
-circle.innerText=n
-
-circle.style.left=x+"px"
-circle.style.top=y+"px"
-
-document.body.appendChild(circle)
-
-circles.push(circle)
-
-number++
+n++
 
 }
 
-document.addEventListener("click",function(e){
+numbers.sort(()=>Math.random()-0.5)
 
-if(e.target.tagName==="INPUT" || e.target.tagName==="BUTTON") return
-
-createCircle(e.pageX,e.pageY)
-
+circles.forEach((c,i)=>{
+c.innerText=numbers[i]
 })
-
-function undo(){
-
-let last=circles.pop()
-
-if(last){
-last.remove()
-number--
-}
-
-}
-
-function randomSeat(){
-
-let x=Math.random()*window.innerWidth
-let y=Math.random()*window.innerHeight
-
-createCircle(x,y)
 
 }
 
@@ -138,7 +137,7 @@ function resetAll(){
 circles.forEach(c=>c.remove())
 
 circles=[]
-number=1
+createNumber=1
 
 }
 
