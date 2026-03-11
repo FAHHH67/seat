@@ -3,57 +3,39 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>자리 생성기</title>
+<title>Seat Picker</title>
 
 <style>
 
 body{
+margin:0;
 background:white;
 font-family:sans-serif;
-text-align:center;
-display:flex;
-justify-content:center;
 }
 
-.container{
-display:flex;
+#controls{
+position:fixed;
+top:20px;
+right:20px;
 }
 
-#grid{
-display:grid;
-grid-template-columns: repeat(6,70px);
-gap:10px;
-margin-top:40px;
-}
-
-.seat{
-width:70px;
-height:70px;
-border:1px solid black;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-position:relative;
+input{
+padding:6px;
+font-size:14px;
 }
 
 .circle{
 position:absolute;
-width:40px;
-height:40px;
-border:3px solid red;
+width:70px;
+height:70px;
+border:3px solid black;
 border-radius:50%;
 display:flex;
 align-items:center;
 justify-content:center;
+font-size:24px;
 font-weight:bold;
-color:red;
-}
-
-.side{
-margin-left:40px;
-margin-top:80px;
-text-align:left;
+transform:translate(-50%,-50%);
 }
 
 </style>
@@ -62,145 +44,42 @@ text-align:left;
 
 <body>
 
-<div class="container">
-
-<div>
-
-<h2>자리 생성기</h2>
-
-<button onclick="generate()">자리 생성</button>
-<button onclick="shuffle()">랜덤 섞기</button>
-
-<div id="grid"></div>
-
-</div>
-
-<div class="side">
-<h3>제외 번호</h3>
-<div id="exclude"></div>
-</div>
-
+<div id="controls">
+제외 번호<br>
+<input id="exclude" placeholder="예: 2,5,7">
 </div>
 
 <script>
 
-let seats = 30
-let clickOrder = []
-let excluded = new Set()
+let current=1
 
-function generate(){
+document.addEventListener("click",function(e){
 
-let grid=document.getElementById("grid")
-grid.innerHTML=""
+if(e.target.tagName==="INPUT") return
 
-for(let i=1;i<=seats;i++){
+let excludeInput=document.getElementById("exclude").value
+let exclude=[]
 
-let div=document.createElement("div")
-div.className="seat"
-div.dataset.num=i
-div.innerText=i
-
-div.onclick=()=>clickSeat(div)
-
-grid.appendChild(div)
-
+if(excludeInput.trim()!=""){
+exclude=excludeInput.split(",").map(n=>parseInt(n.trim()))
 }
 
-createExclude()
-
+while(exclude.includes(current)){
+current++
 }
-
-function clickSeat(div){
-
-let num=parseInt(div.dataset.num)
-
-if(excluded.has(num)) return
-
-if(clickOrder.includes(num)){
-clickOrder=clickOrder.filter(n=>n!==num)
-}else{
-clickOrder.push(num)
-}
-
-updateCircles()
-
-}
-
-function updateCircles(){
-
-document.querySelectorAll(".circle").forEach(e=>e.remove())
-
-clickOrder.forEach((num,i)=>{
-
-let seat=document.querySelector(`[data-num='${num}']`)
 
 let circle=document.createElement("div")
 circle.className="circle"
-circle.innerText=i+1
+circle.innerText=current
 
-seat.appendChild(circle)
+circle.style.left=e.pageX+"px"
+circle.style.top=e.pageY+"px"
 
-})
+document.body.appendChild(circle)
 
-}
-
-function shuffle(){
-
-let numbers=[]
-
-for(let i=1;i<=seats;i++){
-if(!excluded.has(i)) numbers.push(i)
-}
-
-numbers.sort(()=>Math.random()-0.5)
-
-document.querySelectorAll(".seat").forEach((seat,i)=>{
-
-let n=parseInt(seat.dataset.num)
-
-if(excluded.has(n)){
-seat.style.background="#ddd"
-}else{
-seat.style.background="white"
-}
+current++
 
 })
-
-}
-
-function createExclude(){
-
-let box=document.getElementById("exclude")
-box.innerHTML=""
-
-for(let i=1;i<=seats;i++){
-
-let label=document.createElement("label")
-
-let cb=document.createElement("input")
-cb.type="checkbox"
-cb.value=i
-
-cb.onchange=()=>{
-
-if(cb.checked){
-excluded.add(i)
-}else{
-excluded.delete(i)
-}
-
-}
-
-label.append(cb," "+i)
-
-box.appendChild(label)
-box.appendChild(document.createElement("br"))
-
-}
-
-}
-
-generate()
 
 </script>
 
