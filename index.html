@@ -17,25 +17,23 @@ align-items:center;
 justify-content:center;
 }
 
-/* 전체 레이아웃 */
 #layout{
 display:flex;
 gap:30px;
 align-items:center;
 }
 
-/* 자리 생성 영역 (레이어2) */
 #seatArea{
-width:600px;
-height:400px;
+width:650px;
+height:450px;
 background:white;
 border:3px solid black;
 border-radius:12px;
 box-shadow:0 8px 25px rgba(0,0,0,0.15);
 position:relative;
+overflow:hidden;
 }
 
-/* 오른쪽 패널 */
 #panel{
 width:180px;
 background:white;
@@ -57,7 +55,6 @@ margin-bottom:6px;
 padding:5px;
 }
 
-/* 동그라미 */
 .circle{
 position:absolute;
 width:70px;
@@ -71,6 +68,7 @@ font-size:22px;
 font-weight:bold;
 background:white;
 transform:translate(-50%,-50%);
+cursor:pointer;
 }
 
 </style>
@@ -103,6 +101,8 @@ let createNumber=1
 
 area.addEventListener("click",function(e){
 
+if(e.target.classList.contains("circle")) return
+
 let rect=area.getBoundingClientRect()
 
 let x=e.clientX-rect.left
@@ -115,6 +115,10 @@ circle.innerText=createNumber
 
 circle.style.left=x+"px"
 circle.style.top=y+"px"
+
+circle.addEventListener("click",function(event){
+event.stopPropagation()
+})
 
 area.appendChild(circle)
 
@@ -149,24 +153,29 @@ function shuffleNumbers(){
 
 let exclude=getExclude()
 
-let need=circles.length
+let seatCount=circles.length
+
+/* 번호 생성 (1~자리수) */
 let numbers=[]
-let n=1
-
-while(numbers.length < need){
-
-if(!exclude.includes(n)){
-numbers.push(n)
+for(let i=1;i<=seatCount;i++){
+numbers.push(i)
 }
 
-n++
+/* 제외번호 제거 */
+numbers=numbers.filter(n=>!exclude.includes(n))
 
-}
-
+/* 랜덤 섞기 */
 numbers.sort(()=>Math.random()-0.5)
 
+/* 자리 배치 */
 circles.forEach((c,i)=>{
+
+if(numbers[i]!==undefined){
 c.innerText=numbers[i]
+}else{
+c.innerText=""
+}
+
 })
 
 }
