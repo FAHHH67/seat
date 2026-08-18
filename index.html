@@ -1,3 +1,6 @@
+피셔-예이츠(Fisher-Yates) 셔플 알고리즘을 적용하여 완전한 무작위(랜덤)로 동작하도록 수정한 전체 코드입니다.
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -171,13 +174,18 @@ return result
 
 }
 
+// 수정한 shuffleNumbers 함수 (피셔-예이츠 셔플 알고리즘 적용)
 function shuffleNumbers(){
 
 let text=document.getElementById("numbers").value
 
 let numbers=parseNumbers(text)
 
-numbers.sort(()=>Math.random()-0.5)
+// 모든 위치에 공정한 확률(1/N)을 부여하는 피셔-예이츠 셔플
+for(let i = numbers.length - 1; i > 0; i--){
+    let j = Math.floor(Math.random() * (i + 1));
+    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+}
 
 circles.forEach((c,i)=>{
 
@@ -204,3 +212,5 @@ createNumber=1
 
 </body>
 </html>
+
+```
